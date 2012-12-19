@@ -93,7 +93,7 @@
 </div>
 </div>
 <div class="page-bottom">
-<div class="footer">WebWaver</div>
+<div class="footer">Projekt indywidualny - Adam Kuchar</div>
 </div>
 <g:javascript library="application" />
 <r:layoutResources />
