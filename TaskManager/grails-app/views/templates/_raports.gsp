@@ -13,11 +13,13 @@
 						<g:each var="position" in="${raport.positions}">
 							<td>
 							<g:formatDate format="EE dd-MM-yyyy" date="${position.date}" />
-							</td>
-							<td>
-								${position.workHours}
-							</td>
-							</tr><tr>
+							<g:if test="${position.description }">
+								<span  title="<center>Opis:</center> ${position.description}" class="ui-icon ui-icon-script"></span>
+							</g:if>
+								</td>
+								<td>${position.workHours}
+								</td>
+								</tr><tr>
 						</g:each>
 					</tr>
 				</g:each>

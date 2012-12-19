@@ -6,6 +6,7 @@
 <title>TaskManager - Dodawanie Raportów</title>
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}"
 	type="text/css">
+<g:javascript src="description.js" />
 </head>
 <body>
 	<hr>
@@ -48,6 +49,20 @@
 		</g:else>
 	</table>
 	<br>
+	<g:if test="${taskPositionsMap}">
+		<g:each var="entryMap" in="${taskPositionsMap}">
+					<g:each var="day" in="${weekdays}" status="i">
+					<div class="description" id="${entryMap.key.id+"_"+i}">
+					Opis do zadania: ${entryMap.key.name} z dnia <g:formatDate format="EEEE dd-MM-yyyy" date="${day}" />
+						<g:textArea name="description" style="width:400px; min-width:400px; max-width:400px;"
+								value="${entryMap?.value?.getAt(i)?.description}"
+								onchange="${remoteFunction(action: 'addPositionDescriptionAjax',  
+									params:'\'taskId=' +entryMap.key.id + '&weekday=' +i + '&weekNumber=' +weekNumber + '&year=' +year+ '&changedValue=\' + this.value', update:'message')}" />
+					</div>
+					</g:each>
+		</g:each>
+				<br>
+		</g:if>
 		<table class="none" style="width:40%; height:auto;"><tr><td><g:link action="confirmRaport"	class="button" params="${[weekNumber:weekNumber,year:year]}" onclick="javascript:return confirm('Na pewno chcesz zatwierdzić wszystkie raporty?')">Zatwierdź</g:link></td>
 		<td><g:link controller="DeveloperPanel" class="button">Powrót</g:link></td></table>
 	<div id="message" class="message"></div>

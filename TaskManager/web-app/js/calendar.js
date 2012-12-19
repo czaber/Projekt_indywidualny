@@ -28,6 +28,13 @@ $(document).ready(
 									if(window.location.pathname==pathA || window.location.pathname==pathD)
 									{
 										path = "../show/" + id;
+									}else {						
+										pathA = "/TaskManager/adminPanel/statMonth";
+										pathD = "/TaskManager/developerPanel/statMonth";
+										if(window.location.pathname == pathA)
+											path = "/TaskManager/adminPanel/statMonthAjax/";
+										else if(window.location.pathname == pathD)
+											path = "/TaskManager/developerPanel/statMonthAjax/";
 									}
 									
 									$.ajax({

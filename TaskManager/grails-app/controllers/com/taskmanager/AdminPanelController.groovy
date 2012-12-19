@@ -62,6 +62,24 @@ class AdminPanelController {
 	}
 
 
+
+	def tasksList(){
+		def users=User.findAllWhere(enabled:true)
+		def userId
+		def tasksUserMap = [:]
+		def taskList  = Task.findAll { dateEnd == null }
+		def usersTasks
+
+		for(user in users){
+			userId = user.id
+			usersTasks = UserTask.findAll{
+				user.id == userId && confirm == false
+			}
+			tasksUserMap.put(user, usersTasks*.task)
+		}
+		[taskList:taskList, tasksUserMap:tasksUserMap]
+	}
+
 	def showEndedTasks(){
 		def taskList  = Task.findAll { dateEnd != null }
 		taskList.sort(true){a, b -> b.dateEnd <=> a.dateEnd }
@@ -209,7 +227,7 @@ class AdminPanelController {
 	}
 
 
-	def addTaskToUserList(){  //WERSJA DO ZMIANY  dodanie javascript
+	def addTaskToUserTEMP(){   //TESTOWE TESTOWE TESTOWE TESTOWE TESTOWE TESTOWE TESTOWE TESTOWE TESTOWE
 		def tasksNotEnded  = Task.findAll { dateEnd == null }
 		def users=User.findAllWhere(enabled:true)
 		def usersTasks
@@ -230,21 +248,24 @@ class AdminPanelController {
 
 		return [taskMap:taskMap]
 	}
-	def addTaskToUser(){                    //WERSJA DO ZMIANY
-		if(params.id && params.user){
-			def user = User.get(params.user.asType(Integer))
-			def task  = Task.get(params.id)
-			def userTask =  new UserTask(user: user, task: task)
+	def addTaskUser(){
+		def user = User.get(params.idDeveloper)
+		def task  = Task.get(params.idTask)
+		def userTask = UserTask.findWhere(task:task, user:user)
+		if(userTask){ //zadanie było kiedys zakończone jednak admin chce je przywrócic
+			userTask.confirm = false
+			userTask.date = null
+			sendMailService.sendMail(user.email,"Nowe zadanie na TaskManger","${task.name} zostało przywrócone przez admina .")
+		}
+		else{
+			userTask =  new UserTask(user: user, task: task)
 			if(userTask.validate()){
 				userTask.save()
 				sendMailService.sendMail(user.email,"Nowe zadanie na TaskManger","Do twojego konta zostało dodane nowe zadanie - ${task.name}.")
-				flash.message = "${task.name} zostało poprawnie dodane do zadan ${user.username}"
 			}
 		}
-		redirect(action:'addTaskToUserList')
+
 	}
-	
-	
 	def notConfirmRaports(){
 		def c = Raport.createCriteria()
 		def raports = c{
@@ -299,5 +320,39 @@ class AdminPanelController {
 		redirect(action: 'notConfirmRaports')
 	}
 
+	def statMonth(){
+		def users = User.list()
+		def taskHoursMapsList = []
+		def allHoursList = []
+		for(user in users){
+			def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, new Date())
+			allHoursList.add(allHours)
+			taskHoursMapsList.add(taskHoursMap)
+		}
+
+		return [users:users,taskHoursMapsList:taskHoursMapsList,allHoursList:allHoursList]
+		
+	}
+	
+	def statMonthAjax(){
+		def today
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		if(params.data){
+			today = df.parse(params.data);
+		}
+		else
+			today = new Date()
+		def users = User.list()
+		def taskHoursMapsList = []
+		def allHoursList = []
+		for(user in users){
+			def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, today)
+			allHoursList.add(allHours)
+			taskHoursMapsList.add(taskHoursMap)
+		}
+		
+		render(template:"statMonthPanel", model:[users: users,taskHoursMapsList:taskHoursMapsList,allHoursList:allHoursList])
+		
+	}
 }
 

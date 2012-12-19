@@ -188,5 +188,55 @@ class DeveloperPanelController {
 			render"Wystąpił bład podczas zapisu(inject services nie zaddziałał)"
 		}
 	}
+	def addPositionDescriptionAjax(){
+		try {
+			def user = User.get(springSecurityService.getCurrentUser().id)
+			def userId  = user.id
+			def task = Task.get(params.taskId.asType(Long))
+			def taskId = task.id
+			def weekday = params.weekday.asType(Integer)
+			def weekNumber = params.weekNumber.asType(Integer)
+			def year = params.year.asType(Integer)
+			
+			def description = params.changedValue
+			def raport = Raport.find{
+				creator.id == userId && task.id == taskId && weekOfYear == weekNumber && year == year
+			}
+			if(!raport){
+				raport = raportService.createRaportAndAddPosition(task, user, weekNumber, year)
+			}
+				
+			raportService.changePositionInRaport(raport, weekday, null,description)
+			render"Pozycja została poprawnie dodana"
+		}
+		catch (ValidationException e) {
+			render e.message
+		}
+		catch (NullPointerException e) { 
+			render"Wystąpił bład podczas zapisu(inject services nie zaddziałał)"
+		}
+	}
 	
+	def statMonth(){					
+		def user = User.get(springSecurityService.getCurrentUser().id)
+		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, new Date())
+		return [taskHoursMap:taskHoursMap,allHours:allHours]
+		
+	}
+	
+	def statMonthAjax(){
+		def today
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		if(params.data){
+			today = df.parse(params.data);
+		}
+		else
+			today = new Date()
+		
+			
+		def user = User.get(springSecurityService.getCurrentUser().id)
+		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user,today)
+		
+		render(template:"/templates/hoursMonthPanel", model:[taskHoursMap: taskHoursMap,allHours:allHours])
+	}
 }
