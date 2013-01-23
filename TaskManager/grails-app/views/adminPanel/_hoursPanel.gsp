@@ -37,6 +37,9 @@
 		
 			</g:each>
 		</table>
+		
+		<gvisualization:lineCoreChart dynamicLoading="${true}" elementId="linechartShowDetails" width="${600}" height="${300}" columns="${wykresKolumny}" data="${wykresDane}"  vAxis="${new Expando(title: 'Liczba godzin',minValue:1)}"  hAxis="${new Expando(title: 'Data')}"/>
+	 	<div id="linechartShowDetails"></div>
 	</g:if>
 	<g:else>
 		<h3>Nikt obecnie nie pracuje nad tym zadaniem.</h3>

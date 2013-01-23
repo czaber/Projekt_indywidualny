@@ -25,14 +25,16 @@ $(document).ready(
 									var pathA = "/TaskManager/adminPanel/showTask/"+id;
 									var pathD = "/TaskManager/developerPanel/showDetails/"+id;
 									var path;
+									var userId = $('#userId').val();
 									if(window.location.pathname==pathA || window.location.pathname==pathD)
 									{
 										path = "../show/" + id;
 									}else {						
 										pathA = "/TaskManager/adminPanel/statMonth";
 										pathD = "/TaskManager/developerPanel/statMonth";
-										if(window.location.pathname == pathA)
+										if(window.location.pathname == pathA){
 											path = "/TaskManager/adminPanel/statMonthAjax/";
+										}									
 										else if(window.location.pathname == pathD)
 											path = "/TaskManager/developerPanel/statMonthAjax/";
 									}
@@ -41,7 +43,7 @@ $(document).ready(
 										type : "POST",
 										url : path,
 										data : {
-											data : dateText
+											data : dateText,userId :userId,
 										},
 										success : function(html) {
 											$("#show").html(html);

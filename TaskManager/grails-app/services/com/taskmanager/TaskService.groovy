@@ -4,7 +4,7 @@ import java.awt.List;
 import javax.validation.ValidationException
 
 class TaskService {
-
+	def calendarService
 	/**
 	 * Metoda tworząca listę zawierająca liczbę h przepracowanych w dniu ,tygodniu, miesiącu i całościowo nad tym zadaniem przez danego pracownika
 	 * @param task
@@ -108,6 +108,101 @@ class TaskService {
     }
 
 	
+	def getMonthHoursFromTask(task,user,Date date){
+		if(task == null || date == null)
+			throw new ValidationException()
+		def wykresDane = []
+		def positions
+		def positionsInMonth
+		def calendar = Calendar.getInstance()
+		def raports
+		calendar.setTime(date)
+		def day =  calendar.get(Calendar.DAY_OF_MONTH)
+		def weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
+		def year = calendar.get(Calendar.YEAR)
+		def month = calendar.get(Calendar.MONTH)
+		
+		if(user){
+			def userId = user.id
+			raports = task.raports.findAll{
+				if(it.creator.id == userId  && it.dateConfirmByAdmin!=null)
+					return it
+			}
+		}
+		else{
+			raports = task.raports.findAll{
+				if(it.dateConfirmByAdmin!=null)
+					return it
+			}
+		}
+
+		positions = raports.positions
+		
+		positions = positions.flatten()
+		positionsInMonth = positions.findAll{
+			calendar.setTime(it.date)
+			if(calendar.get(Calendar.MONTH) == month && calendar.get(Calendar.YEAR) == year)
+				return it
+		}
+		
+		positionsInMonth.sort(){it.date}
+		positionsInMonth.each {
+			wykresDane.add([it.date.format('dd/MM/yy').toString(),it.workHours])
+		}
+		return wykresDane
+	}
+	
+	
+	def getDayHoursFromTask(task,user,Date date){
+		if(task == null || date == null)
+			throw new ValidationException()
+		def hoursInDay
+		def positions
+		def positionsInDay
+		def calendar = Calendar.getInstance()
+		def raports
+		calendar.setTime(date)
+		def day =  calendar.get(Calendar.DAY_OF_MONTH)
+		def weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
+		def year = calendar.get(Calendar.YEAR)
+		def month = calendar.get(Calendar.MONTH)
+	
+		hoursInDay = 0
+		if(user){
+			
+			def userId = user.id
+			raports = task.raports.findAll{
+				if(it.creator.id == userId  && it.dateConfirmByAdmin!=null)
+					return it
+			}
+		}
+		else{
+			raports = task.raports.findAll{
+				if(it.dateConfirmByAdmin!=null)
+					return it
+			}
+		}
+		positions = raports.positions
+		
+		positions = positions.flatten()
+		
+	
+		positionsInDay = positions.findAll{
+			calendar.setTime(it.date)
+			if(calendar.get(Calendar.DAY_OF_MONTH) == day && calendar.get(Calendar.MONTH) == month && calendar.get(Calendar.YEAR) == year)
+				return it
+		}
+		if(positionsInDay){
+			positionsInDay.workHours*.each {
+			hoursInDay +=it
+			}
+		}
+		return hoursInDay
+
+	}
+	
+	
+	
 	/**
 	 * Metoda tworząca mapę w której task jest kluczem natomiast wartością jest lista  pozycji (z jednego tygodnia).Wartość jest null(nie ma żadnych pozycji)
 	 * gdy nie został stworzony jeszcze raport dla danego taska w danym tygodniu 
@@ -186,4 +281,28 @@ class TaskService {
 	}
 	
 	
-}
+	def getChartData(tasks,user, day){
+		def wykresKolumny  = [['string', 'data']]
+		def wykresDane = []
+		
+		for(task in  tasks){
+			wykresKolumny.add(['number', task.name])
+		}
+		
+		
+		def daysInMonth = calendarService.getMonthDays(day)
+		
+		for(int i = 0; i < daysInMonth.size(); i++){
+			
+			def temp = []
+			temp.add(daysInMonth[i].format('dd/MM/yy').toString())
+			for(task in tasks){
+				temp.add(this.getDayHoursFromTask(task, user, daysInMonth[i]))
+			}
+			
+			wykresDane.add(temp)
+		}
+		return [wykresKolumny,wykresDane]
+	}
+	}
+

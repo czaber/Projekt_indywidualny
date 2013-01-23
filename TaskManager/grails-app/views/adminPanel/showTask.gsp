@@ -9,6 +9,7 @@
 	rel="stylesheet" type="text/css" />
 <title>TaskManager - Zadanie ${task.name} - szczegóły</title>
 <g:javascript src="calendar.js" />
+  <gvisualization:apiImport/>
 </head>
 <body>
 	<hr>

@@ -37,7 +37,6 @@
 				</tr>
 			</g:each>
 		</table>
-	<g:link action="showEndedTasks" class="button" style="width:200px;">Pokaż zadania zakończone</g:link>
-	<g:link action="index" class="button">Powrót</g:link>
+	<g:link action="tasksList" class="button">Powrót</g:link>
 </body>
 </html>

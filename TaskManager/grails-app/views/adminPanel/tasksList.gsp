@@ -9,7 +9,7 @@
 </head>
 <body>
 	<hr>
-		Przydzielanie zadań
+		Zadania
 	<hr style="margin-bottom:10px">
 	<div class="tasksPanel">
 		<div class="tasksDeveloper">
@@ -20,8 +20,14 @@
 				<div class="taskactive task" id="${task.id}">${task.name}
 				</div>
 			</g:each>
-			<g:link style="margin-top:20px;" controller="AdminPanel" class="button">Powrót</g:link>
+		<div class="tasksPanelOther" >
+			<g:link action="createTask" class="button" style="width:200px;">Stwórz zadanie</g:link>
+			<g:link action="endTasks" class="button" style="width:200px;">Zakończ zadanie</g:link>
+			<g:link action="tasks" class="button" style="width:200px;">Pokaż szczegóły</g:link>
+			<g:link action="showEndedTasks" class="button" style="width:200px;">Pokaż zadania zakończone</g:link>
 		</div>
+		</div>
+
 		<div class="developers">
 			<g:each var="mapEntry" in="${tasksUserMap}">
 				<div class="developer">
@@ -42,5 +48,7 @@
 			</g:each>
 		</div>
 	</div>
+		
+	<g:link action="index" class="button">Powrót</g:link>
 </body>
 </html>

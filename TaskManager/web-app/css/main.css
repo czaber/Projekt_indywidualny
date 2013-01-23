@@ -112,7 +112,7 @@ body {
 	box-shadow: 0 0 0.7em #FF4400;
 }
 
-.menu .navigation {
+.menu .navigation {	
 	width: 160px;
 	position: absolute;
 	left: -55px;
@@ -225,7 +225,7 @@ body {
 }
 
 .menu .navigation dl.admin:hover dd {
-	height: 370px;
+	height: 230px;
 }
 
 .menu .navigation dl.develop:hover dd {
@@ -845,3 +845,41 @@ td:hover {
 }
 .ui-icon-triangle-1-n { z-index:1000; display:none; top:32px; background-position: 0 -16px;}
 .ui-icon-triangle-1-s {  z-index:1000; display:none; bottom:-220px; background-position: -64px -16px; }
+
+
+
+#show{
+	position: relative;
+	left: 0px;
+	margin-bottom: 40px;
+}
+
+#showStat{
+	position: relative;
+	left: 15px;
+	top:20px;
+}
+#linechartShowDetails{
+	position: relative;
+	left: 60px;
+	top: 30px;
+	height: 330px;
+
+
+}
+
+#linechartStat{
+	position: relative;
+	left: 90px;
+	bottom: 10px;
+	margin-top: 80px;
+
+}
+
+
+.tasksPanelOther{
+	float: left;
+	margin-left: 15px;
+	margin-top: 50px;
+	
+}

@@ -59,6 +59,20 @@ class CalendarService {
 		return wdays.sort()
 	}
 	
+	
+	def getMonthDays(data){
+		def cal = Calendar.getInstance()
+		cal.setTime(data)
+		def max = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		def days = []
+		for(int i = 1; i <= max; i++){
+			cal.set(Calendar.DAY_OF_MONTH, i)
+			days.add(cal.getTime())
+		}
+		
+		return days
+			
+	}
 	/**
 	 * Metoda sprawdzajaca czy dwie daty są z tego samego dnia
 	 * @param date1

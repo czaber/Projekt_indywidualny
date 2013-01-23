@@ -10,11 +10,8 @@
 	<hr>
 	Panel Admina
 	<hr style="margin-bottom:10px">
-	<g:link action="tasksList">Przydziel zadania</g:link>
-	<g:link action="tasks">Zadania</g:link>
+	<g:link action="tasksList">Zadania</g:link>
 	<g:link action="notConfirmRaports">Zatwierdź raporty</g:link>
-	<g:link action="createTask">Stwórz zadanie</g:link>
-	<g:link action="endTasks">Zakończ zadania</g:link>
 	<g:link action="statMonth">Statystyka Miesięczna</g:link>
 	<g:link action="activeUsers">Aktywacja użytkowników</g:link>
 	<g:link controller="DeveloperPanel" action="index">Moje zadania</g:link>

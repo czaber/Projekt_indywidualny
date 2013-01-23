@@ -9,6 +9,7 @@
 	rel="stylesheet" type="text/css" />
 <title>TaskManager - Zadanie ${task.name} - szczegóły</title>
 <g:javascript src="calendar.js" />
+  <gvisualization:apiImport/>
 </head>
 <body>
 	<hr>
@@ -16,13 +17,13 @@
 	<hr style="margin-bottom:10px">
 	<g:if test="${task.description}"><div style="margin:auto; width:90%;">Opis: <br> ${task.description}</div></g:if>
 	<div style="margin-top:10px; overflow:hidden; width:100%;">
-	<div style="width:40%; float:left;height:270px;">
+	<div style="width:40%; float:right;height:270px;">
 	<div type="text" id="datepicker"></div>
 	</div>
 	<div style="width:60%; margin-top:20px; float:left;">
 	<div id="show" style="margin:center;">
 		<g:render template="hoursPanel"
-			model="${[taskRaport: taskRaport,task:task,userId:userId]}" />
+			model="${[taskRaport: taskRaport,task:task,userId:userId, wykresKolumny : wykresKolumny, wykresDane : wykresDane]}" />
 	</div>
 	<g:hiddenField name="taskId" id="taskId" value="${id}" />
 	</div>

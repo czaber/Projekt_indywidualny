@@ -51,7 +51,7 @@
 		</g:each>
 	</table>
 
-<g:link controller="AdminPanel" class="button">Powrót</g:link>
+<g:link action="tasksList" class="button">Powrót</g:link>
 
 </body>
 </html>

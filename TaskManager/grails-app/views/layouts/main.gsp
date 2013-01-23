@@ -30,11 +30,8 @@
 						<g:link controller='AdminPanel'>Admin</g:link>
 					</dt>
 					<dd>
-					<g:link controller='AdminPanel' action="tasksList">Przydziel Zadania</g:link>
-					<g:link controller='AdminPanel' action="tasks">Zadania</g:link>
+					<g:link controller='AdminPanel' action="tasksList">Zadania</g:link>
 					<g:link controller='AdminPanel' action="notConfirmRaports">Zatwierdź Raporty</g:link>
-					<g:link controller='AdminPanel' action="createTask">Nowe Zadanie</g:link>	
-					<g:link controller='AdminPanel' action="endTasks">Zakończ Zadanie</g:link>
 					<g:link controller='AdminPanel' action="statMonth">Statystyka</g:link>
 					<g:link controller='AdminPanel' action="activeUsers">Aktywacja</g:link>
 					<g:link controller='DeveloperPanel' action="index">Moje Zadania</g:link>

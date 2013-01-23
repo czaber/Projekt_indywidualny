@@ -26,6 +26,6 @@
 			</g:each>
 		</table>
 		
-		<g:link action="tasks" class="button">Powrót</g:link>
+		<g:link action="tasksList" class="button">Powrót</g:link>
 </body>
 </html>

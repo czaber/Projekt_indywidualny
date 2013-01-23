@@ -97,9 +97,10 @@ class DeveloperPanelController {
 			def task = Task.get(params.id)
 
 			def taskRaport = taskService.getHoursFromTask(task, user,new Date())
-			
+			def wykresKolumny  = [['string', 'data'], ['number', task.name]]
+			def wykresDane = taskService.getMonthHoursFromTask(task, user,new Date())
 			def tasksUser  = UserTask.findByTaskAndUser(task,user)
-			[taskRaport:taskRaport,task:task,userId:user.id,id:params.id,tasksUser:tasksUser]
+			[taskRaport:taskRaport,task:task,userId:user.id,id:params.id,tasksUser:tasksUser, wykresKolumny : wykresKolumny, wykresDane : wykresDane]
 		}
 		else
 			redirect(action:'tasksList')
@@ -127,8 +128,10 @@ class DeveloperPanelController {
 			today = new Date()
 
 		def taskRaport = taskService.getHoursFromTask(task, user,today)
-
-		render(template:"hoursPanel", model:[taskRaport: taskRaport,task:task,userId:user.id])
+		def wykresKolumny  = [['string', 'data'], ['number', task.name]]
+		def wykresDane = taskService.getMonthHoursFromTask(task, user,today)
+		
+		render(template:"hoursPanel", model:[taskRaport: taskRaport,task:task,userId:user.id, wykresKolumny : wykresKolumny, wykresDane : wykresDane])
 	}
 
 
@@ -220,11 +223,17 @@ class DeveloperPanelController {
 	def statMonth(){					
 		def user = User.get(springSecurityService.getCurrentUser().id)
 		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, new Date())
-		return [taskHoursMap:taskHoursMap,allHours:allHours]
+		
+		def tasks = taskHoursMap.keySet().toList()
+		
+		def (wykresKolumny,wykresDane) = taskService.getChartData(tasks, user, new Date())
+		 
+		return [taskHoursMap:taskHoursMap,allHours:allHours,wykresKolumny : wykresKolumny , wykresDane : wykresDane, user :user]
 		
 	}
 	
 	def statMonthAjax(){
+		
 		def today
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		if(params.data){
@@ -233,10 +242,17 @@ class DeveloperPanelController {
 		else
 			today = new Date()
 		
-			
+		
 		def user = User.get(springSecurityService.getCurrentUser().id)
 		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user,today)
 		
-		render(template:"/templates/hoursMonthPanel", model:[taskHoursMap: taskHoursMap,allHours:allHours])
+		
+		def tasks = taskHoursMap.keySet().toList()
+		
+		def (wykresKolumny,wykresDane) = taskService.getChartData(tasks, user, today)
+		
+
+		
+		render(template:"/templates/hoursMonthPanel", model:[taskHoursMap: taskHoursMap,allHours:allHours,wykresKolumny : wykresKolumny , wykresDane : wykresDane])
 	}
 }

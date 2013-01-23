@@ -9,7 +9,7 @@ class AdminPanelController {
 	def taskService
 	def raportService
 	def sendMailService
-
+	def calendarService
 
 	def index() {
 		def c = Raport.createCriteria()
@@ -85,7 +85,7 @@ class AdminPanelController {
 		taskList.sort(true){a, b -> b.dateEnd <=> a.dateEnd }
 		if(!taskList){
 			flash.message = "Brak zakończonych zadań."
-			redirect(action:'tasks')
+			redirect(action:'tasksList')
 		}
 		[taskList:taskList]
 	}
@@ -116,14 +116,32 @@ class AdminPanelController {
 			def usersTasks = UserTask.findAll { task.id == taskId }
 
 			usersTasks.sort(true){ it.user }
-
 			def raportsUser = [:]
-
+			def wykresKolumny  = [['string', 'data']]
+			def wykresDane = []
+			
+			def size = usersTasks.size()
 			for(userTask in usersTasks){
+				wykresKolumny.add(['number', userTask.user.username])
 				raportsUser.put(userTask, taskService.getHoursFromTask(userTask.task, userTask.user,new Date()))
+				
+			}
+			
+			
+			def users = usersTasks*.user.sort()		
+			def daysInMonth = calendarService.getMonthDays(new Date())
+			for(int i = 0; i < daysInMonth.size(); i++){
+				
+				def temp = []
+				temp.add(daysInMonth[i].format('dd/MM/yy').toString())
+				for(user in users){
+					temp.add(taskService.getDayHoursFromTask(task, user, daysInMonth[i]))
+				}
+				
+				wykresDane.add(temp)
 			}
 
-			[raportsUser:raportsUser, task:task,id:params.id]
+			[raportsUser:raportsUser, task:task,id:params.id,wykresKolumny : wykresKolumny , wykresDane : wykresDane]
 		}
 		else
 			redirect(action:'tasksList')
@@ -135,7 +153,8 @@ class AdminPanelController {
 			def  task = Task.get(params.id)
 			def taskId = task.id
 			def usersTasks = UserTask.findAll { task.id == taskId  }
-	
+			def wykresKolumny  = [['string', 'data']]
+			def wykresDane = []
 			usersTasks.sort(true){ it.user }
 	
 	
@@ -151,10 +170,24 @@ class AdminPanelController {
 			def raportsUser = [:]
 	
 			for(userTask in usersTasks){
+				wykresKolumny.add(['number', userTask.user.username])
 				raportsUser.put(userTask, taskService.getHoursFromTask(userTask.task, userTask.user,today))
 			}
 	
-			render(template:"hoursPanel", model:[raportsUser: raportsUser])
+			def users = usersTasks*.user.sort()
+			def daysInMonth = calendarService.getMonthDays(today)
+			for(int i = 0; i < daysInMonth.size(); i++){
+				
+				def temp = []
+				temp.add(daysInMonth[i].format('dd/MM/yy').toString())
+				for(user in users){
+					temp.add(taskService.getDayHoursFromTask(task, user, daysInMonth[i]))
+				}
+				
+				wykresDane.add(temp)
+			}
+
+			render(template:"hoursPanel", model:[raportsUser: raportsUser,wykresKolumny : wykresKolumny , wykresDane : wykresDane])
 		}
 
 	}
@@ -321,16 +354,20 @@ class AdminPanelController {
 	}
 
 	def statMonth(){
-		def users = User.list()
-		def taskHoursMapsList = []
-		def allHoursList = []
-		for(user in users){
-			def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, new Date())
-			allHoursList.add(allHours)
-			taskHoursMapsList.add(taskHoursMap)
+		def user
+		if (params.userSelect){
+			user = User.get(params.userSelect.asType(Integer))
 		}
-
-		return [users:users,taskHoursMapsList:taskHoursMapsList,allHoursList:allHoursList]
+		else
+			user = User.list()[0]
+			
+		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, new Date())
+		
+		def tasks = taskHoursMap.keySet().toList()
+		
+		def (wykresKolumny,wykresDane) = taskService.getChartData(tasks, user, new Date())
+		 
+		return [taskHoursMap: taskHoursMap,allHours:allHours,wykresKolumny : wykresKolumny , wykresDane : wykresDane, userId : params.userSelect]
 		
 	}
 	
@@ -342,17 +379,27 @@ class AdminPanelController {
 		}
 		else
 			today = new Date()
-		def users = User.list()
-		def taskHoursMapsList = []
-		def allHoursList = []
-		for(user in users){
-			def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, today)
-			allHoursList.add(allHours)
-			taskHoursMapsList.add(taskHoursMap)
-		}
+			
+		def user
+		if (params.userId){
+				user = User.get(params.userId.asType(Integer))
+			}
+		else
+			user = User.list()[0]
+				
+				
+		def (taskHoursMap,allHours) = taskService.getUserMonthStatistic(user, today)
 		
-		render(template:"statMonthPanel", model:[users: users,taskHoursMapsList:taskHoursMapsList,allHoursList:allHoursList])
+		def tasks = taskHoursMap.keySet().toList()
+		
+		def (wykresKolumny,wykresDane) = taskService.getChartData(tasks, user, today)
+		 
+		
+		render(template:"/templates/hoursMonthPanel", model:[taskHoursMap: taskHoursMap,allHours:allHours,wykresKolumny : wykresKolumny , wykresDane : wykresDane, userId : params.userId])
 		
 	}
+	
+	
+	
 }
 
